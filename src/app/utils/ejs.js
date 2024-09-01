@@ -15,6 +15,8 @@
  * limitations under the License.
  *
 */
+// @ts-ignore
+// @ts-ignore
 
 'use strict';
 

@@ -6,6 +6,7 @@ import Spacer from "./spacer";
 import HtmlPreview from "./html_preview";
 import dynamic from "next/dynamic";
 import EditorLoading from "./editor_loading";
+import { unknown } from "zod";
 
 const MonacoEditorWrapper = lazy(() => import("./editor"));
 
@@ -13,12 +14,12 @@ export function EditorPreview({ className }: { className: string }) {
   const [inputData, setInputData] = useState("");
   const [inputEjs, setInputEjs] = useState("");
   const [htmlString, setHtmlString] = useState("");
-  const [inputDataError, setInputDataError] = useState<Error | null>(null);
-  const [inputEjsError, setInputEjsError] = useState<Error | null>(null);
+  const [inputDataError, setInputDataError] = useState<unknown>(null);
+  const [inputEjsError, setInputEjsError] = useState<unknown>(null);
 
   useEffect(() => {
     const renderEjs = async () => {
-      let data = {};
+      let data: unknown = null;
       if (inputData) {
         const jsonResult = tryParseJson(inputData);
         data = jsonResult.data;
@@ -42,10 +43,8 @@ export function EditorPreview({ className }: { className: string }) {
         <div className="bg-primary/20 flex h-1/4 flex-col rounded-lg">
           <div className="flex flex-row items-center gap-2 px-2 py-1">
             <label className="text-sm">Input Data</label>
-            {inputDataError && (
-              <p className="text-error text-[0.8em]">
-                {inputDataError?.toString()}
-              </p>
+            {inputDataError != null && (
+              <p className="text-error text-[0.8em]">{`${inputDataError}`}</p>
             )}
           </div>
           <Suspense fallback={<EditorLoading />}>
@@ -53,7 +52,7 @@ export function EditorPreview({ className }: { className: string }) {
               language="json"
               className="resize-none rounded-lg transition-all"
               value={inputData}
-              onChange={(value) => setInputData(value || "")}
+              onChange={(value) => setInputData(value ?? "")}
             />
           </Suspense>
         </div>
@@ -63,7 +62,7 @@ export function EditorPreview({ className }: { className: string }) {
         <div className="bg-primary/20 flex h-3/4 flex-col rounded-lg">
           <div className="flex flex-row items-center gap-2 px-2 py-1">
             <label className="text-sm">Input EJS</label>
-            {inputEjsError && (
+            {inputEjsError != null && (
               <p className="text-error text-[0.8em] font-light">
                 {inputEjsError.toString()}
               </p>
@@ -74,7 +73,7 @@ export function EditorPreview({ className }: { className: string }) {
               language="html"
               className="resize-none rounded-lg transition-all"
               value={inputEjs}
-              onChange={(value) => setInputEjs(value || "")}
+              onChange={(value) => setInputEjs(value ?? "")}
             ></MonacoEditorWrapper>
           </Suspense>
         </div>
@@ -87,23 +86,23 @@ export function EditorPreview({ className }: { className: string }) {
   );
 }
 
-function tryParseJson(jsonString: string): { data: any; error: Error | null } {
+function tryParseJson(jsonString: string): { data: unknown; error: unknown } {
   try {
     const data = JSON.parse(jsonString);
     return { data, error: null };
   } catch (error) {
     return {
       data: null,
-      error: error instanceof Error ? error : new Error("Failed to parse JSON"),
+      error: error,
     };
   }
 }
 
 async function tryRender(
   template: string,
-  data: any,
-  options: any = null,
-): Promise<{ html: string | undefined; error: any }> {
+  data: unknown,
+  options: unknown = null,
+): Promise<{ html: string | undefined; error: unknown }> {
   try {
     const html = await render(template, data, options);
     return { html: html, error: null };

@@ -8,7 +8,7 @@ const HtmlPreview = ({ htmlContent }: { htmlContent: string }) => {
   useEffect(() => {
     if (containerRef.current) {
       const shadowRoot =
-        containerRef.current.shadowRoot ||
+        containerRef.current.shadowRoot ??
         containerRef.current.attachShadow({ mode: "open" });
       shadowRoot.innerHTML = htmlContent;
     }
