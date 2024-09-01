@@ -24,7 +24,7 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
   const editorOptions: EditorProps["options"] = {
     minimap: { enabled: false },
     scrollBeyondLastLine: false,
-    fontSize: 14,
+    fontSize: 12,
     lineNumbers: "on",
     roundedSelection: false,
     scrollbar: {

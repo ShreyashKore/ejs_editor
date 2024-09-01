@@ -41,7 +41,7 @@ export function EditorPreview({ className }: { className: string }) {
       <div className="flex min-h-full w-1/2 flex-col">
         <div className="bg-primary/20 flex h-1/4 flex-col rounded-lg">
           <div className="flex flex-row items-center gap-2 px-2 py-1">
-            <label>Input Data</label>
+            <label className="text-sm">Input Data</label>
             {inputDataError && (
               <p className="text-error text-[0.8em]">
                 {inputDataError?.toString()}
@@ -62,7 +62,7 @@ export function EditorPreview({ className }: { className: string }) {
 
         <div className="bg-primary/20 flex h-3/4 flex-col rounded-lg">
           <div className="flex flex-row items-center gap-2 px-2 py-1">
-            <label>Input EJS</label>
+            <label className="text-sm">Input EJS</label>
             {inputEjsError && (
               <p className="text-error text-[0.8em] font-light">
                 {inputEjsError.toString()}
