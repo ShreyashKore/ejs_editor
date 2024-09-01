@@ -1,5 +1,6 @@
 import React from "react";
 import Editor, { EditorProps } from "@monaco-editor/react";
+import EditorLoading from "./editor_loading";
 
 interface MonacoEditorWrapperProps {
   value: string;
@@ -43,21 +44,21 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
       value={value}
       onChange={handleEditorChange}
       options={editorOptions}
-      className={`overflow-hidden rounded-lg ${className}`}
-      theme="vs-dark"
+      loading={<EditorLoading />}
+      className={`overflow-hidden rounded-xl ${className}`}
+      theme="customTheme"
       beforeMount={(monaco) => {
         monaco.editor.defineTheme("customTheme", {
-          base: "vs-dark",
+          base: "vs",
           inherit: true,
           rules: [],
           colors: {
-            "editor.background": "#1a1a1a",
-            "editor.foreground": "#ffffff",
-            "editor.lineHighlightBackground": "#2a2a2a",
-            "editorCursor.foreground": "#ffffff",
-            "editorLineNumber.foreground": "#666666",
+            "editor.background": "#ffffff88",
+            "editorCursor.foreground": "#8c4c89",
           },
         });
+      }}
+      onMount={(editor, monaco) => {
         monaco.editor.setTheme("customTheme");
       }}
     />

@@ -1,9 +1,13 @@
 "use client";
 import { render } from "../utils/ejs";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import Spacer from "./spacer";
 import HtmlPreview from "./html_preview";
+import dynamic from "next/dynamic";
+import EditorLoading from "./editor_loading";
+
+const MonacoEditorWrapper = lazy(() => import("./editor"));
 
 export function EditorPreview({ className }: { className: string }) {
   const [inputData, setInputData] = useState("");
@@ -35,33 +39,48 @@ export function EditorPreview({ className }: { className: string }) {
   return (
     <div className={className}>
       <div className="flex min-h-full w-1/2 flex-col">
-        {inputDataError && (
-          <span className="text-error">{inputDataError?.toString()}</span>
-        )}
-
-        <textarea
-          className="bg-primary/15 text-onPrimary focus:ring-primary placeholder-onPrimary/50 h-1/4 w-full resize-none rounded-lg p-2 transition-all focus:outline-none focus:ring-2"
-          placeholder="Enter input data here..."
-          value={inputData}
-          onChange={(e) => setInputData(e.target.value)}
-        ></textarea>
-        {/* <Spacer /> */}
-        {inputEjsError && (
-          <span className="text-error">{inputEjsError?.toString()}</span>
-        )}
+        <div className="bg-primary/20 flex h-1/4 flex-col rounded-lg">
+          <div className="flex flex-row items-center gap-2 px-2 py-1">
+            <label>Input Data</label>
+            {inputDataError && (
+              <p className="text-error text-[0.8em]">
+                {inputDataError?.toString()}
+              </p>
+            )}
+          </div>
+          <Suspense fallback={<EditorLoading />}>
+            <MonacoEditorWrapper
+              language="json"
+              className="resize-none rounded-lg transition-all"
+              value={inputData}
+              onChange={(value) => setInputData(value || "")}
+            />
+          </Suspense>
+        </div>
 
         <Spacer height={16} />
 
-        <textarea
-          className="bg-primary/15 text-onPrimary focus:ring-primary h-3/4 w-full resize-none rounded-lg p-2 placeholder-[#091E05]/50 transition-all focus:outline-none focus:ring-2"
-          placeholder="Enter EJS format here..."
-          value={inputEjs}
-          onChange={(e) => setInputEjs(e.target.value)}
-        ></textarea>
+        <div className="bg-primary/20 flex h-3/4 flex-col rounded-lg">
+          <div className="flex flex-row items-center gap-2 px-2 py-1">
+            <label>Input EJS</label>
+            {inputEjsError && (
+              <p className="text-error text-[0.8em] font-light">
+                {inputEjsError.toString()}
+              </p>
+            )}
+          </div>
+          <Suspense fallback={<EditorLoading />}>
+            <MonacoEditorWrapper
+              language="html"
+              className="resize-none rounded-lg transition-all"
+              value={inputEjs}
+              onChange={(value) => setInputEjs(value || "")}
+            ></MonacoEditorWrapper>
+          </Suspense>
+        </div>
       </div>
 
       <div className="bg-secondary/10 min-h-full w-1/2 overflow-auto rounded-lg p-2">
-        {/* <div dangerouslySetInnerHTML={{ __html: htmlString }} /> */}
         <HtmlPreview htmlContent={htmlString} />
       </div>
     </div>

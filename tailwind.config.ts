@@ -43,9 +43,9 @@ const colors = {
     dark: '#ffffff',
   },
   error: {
-    DEFAULT: '#e57373',
-    light: '#e57373',
-    dark: '#d32f2f',
+    DEFAULT: '#7a2f32',
+    light: '#7a2f32',
+    dark: '#e8797e',
   },
   warning: {
     DEFAULT: '#ffb74d',
