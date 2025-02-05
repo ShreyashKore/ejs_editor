@@ -40,7 +40,7 @@ export function EditorPreview({ className }: { className: string }) {
       setInputEjsError(error);
       setHtmlString(html ?? "");
     };
-    renderEjs();
+    renderEjs().catch((e) => console.log(e));
   }, [inputData, inputEjs]);
 
   const printHtmlString = (htmlString: string) => {
