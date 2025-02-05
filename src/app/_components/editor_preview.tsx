@@ -8,6 +8,12 @@ import dynamic from "next/dynamic";
 import EditorLoading from "./editor_loading";
 import { unknown } from "zod";
 
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "../../components/ui/resizable";
+
 const MonacoEditorWrapper = lazy(() => import("./editor"));
 
 export function EditorPreview({ className }: { className: string }) {
@@ -37,51 +43,95 @@ export function EditorPreview({ className }: { className: string }) {
     renderEjs();
   }, [inputData, inputEjs]);
 
+  const printHtmlString = (htmlString: string) => {
+    const printWindow = window.open("", "_blank")!!;
+    printWindow.document.open();
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Print</title>
+        </head>
+        <body>
+          ${htmlString}
+          <script>
+            window.onload = function() { window.print(); window.close(); };
+          </script>
+        </body>
+      </html>
+    `);
+    // printWindow.print();
+    // printWindow.document.close();
+  };
+
   return (
     <div className={className}>
-      <div className="flex min-h-full w-1/2 flex-col">
-        <div className="bg-primary/20 flex h-1/4 flex-col rounded-lg">
-          <div className="flex flex-row items-center gap-2 px-2 py-1">
-            <label className="text-sm">Input Data</label>
-            {inputDataError != null && (
-              <p className="text-error text-[0.8em]">{`${inputDataError}`}</p>
-            )}
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="min-h-[200px] rounded-lg md:min-w-[450px]"
+      >
+        <ResizablePanel defaultSize={1}>
+          <div className="flex h-full min-h-full flex-col pr-1">
+            <ResizablePanelGroup
+              direction="vertical"
+              className="min-h-[200px] rounded-lg md:min-w-[450px]"
+            >
+              <ResizablePanel defaultSize={1}>
+                <div className="flex h-full flex-col rounded-lg bg-primary/20">
+                  <div className="flex flex-row items-center gap-2 px-2 py-1">
+                    <label className="text-sm">Input Data</label>
+                    {inputDataError != null && (
+                      <p className="text-[0.8em] text-error">{`${inputDataError}`}</p>
+                    )}
+                  </div>
+                  <Suspense fallback={<EditorLoading />}>
+                    <MonacoEditorWrapper
+                      language="json"
+                      className="resize-none rounded-lg transition-all"
+                      value={inputData}
+                      onChange={(value) => setInputData(value ?? "")}
+                    />
+                  </Suspense>
+                </div>
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={2}>
+                <div className="flex h-full flex-col rounded-lg bg-primary/20">
+                  <div className="flex flex-row items-center gap-2 px-2 py-1">
+                    <label className="text-sm">Input EJS</label>
+                    {inputEjsError != null && (
+                      <p className="text-[0.8em] font-light text-error">
+                        {inputEjsError.toString()}
+                      </p>
+                    )}
+                  </div>
+                  <Suspense fallback={<EditorLoading />}>
+                    <MonacoEditorWrapper
+                      language="html"
+                      className="resize-none rounded-lg transition-all"
+                      value={inputEjs}
+                      onChange={(value) => setInputEjs(value ?? "")}
+                    ></MonacoEditorWrapper>
+                  </Suspense>
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
           </div>
-          <Suspense fallback={<EditorLoading />}>
-            <MonacoEditorWrapper
-              language="json"
-              className="resize-none rounded-lg transition-all"
-              value={inputData}
-              onChange={(value) => setInputData(value ?? "")}
-            />
-          </Suspense>
-        </div>
-
-        <Spacer height={16} />
-
-        <div className="bg-primary/20 flex h-3/4 flex-col rounded-lg">
-          <div className="flex flex-row items-center gap-2 px-2 py-1">
-            <label className="text-sm">Input EJS</label>
-            {inputEjsError != null && (
-              <p className="text-error text-[0.8em] font-light">
-                {inputEjsError.toString()}
-              </p>
-            )}
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={1}>
+          <div className="flex flex-col">
+            <button
+              onClick={() => printHtmlString(inputEjs)}
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            >
+              PRINT
+            </button>
+            <div className="flex h-full items-center justify-center overflow-auto rounded-lg bg-secondary/10 p-2">
+              <HtmlPreview htmlContent={htmlString} />
+            </div>
           </div>
-          <Suspense fallback={<EditorLoading />}>
-            <MonacoEditorWrapper
-              language="html"
-              className="resize-none rounded-lg transition-all"
-              value={inputEjs}
-              onChange={(value) => setInputEjs(value ?? "")}
-            ></MonacoEditorWrapper>
-          </Suspense>
-        </div>
-      </div>
-
-      <div className="bg-secondary/10 min-h-full w-1/2 overflow-auto rounded-lg p-2">
-        <HtmlPreview htmlContent={htmlString} />
-      </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }
