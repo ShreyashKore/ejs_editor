@@ -17,7 +17,7 @@ export default async function Home() {
               Edit EJS and view the PDF output quickly
             </h2>
           </div>
-          <EditorPreview className="flex h-[80vh] w-full flex-col gap-4 sm:flex-row" />
+          <EditorPreview className="flex h-[88vh] w-full flex-col gap-4 sm:flex-row" />
         </div>
       </main>
     </HydrateClient>
