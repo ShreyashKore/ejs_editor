@@ -2,21 +2,19 @@
 import { render } from "../utils/ejs";
 
 import { useEffect, useState, lazy, Suspense } from "react";
-import Spacer from "./spacer";
 import HtmlPreview from "./html_preview";
-import dynamic from "next/dynamic";
 import EditorLoading from "./editor_loading";
-import { unknown } from "zod";
 
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "../../components/ui/resizable";
+import { tryParseJson, tryRender } from "../utils/utils";
 
 const MonacoEditorWrapper = lazy(() => import("./editor"));
 
-export function EditorPreview({ className }: { className: string }) {
+export function EjsEditorAndPreview({ className }: { className: string }) {
   const [inputData, setInputData] = useState("");
   const [inputEjs, setInputEjs] = useState("");
   const [htmlString, setHtmlString] = useState("");
@@ -150,29 +148,4 @@ export function EditorPreview({ className }: { className: string }) {
       </ResizablePanelGroup>
     </div>
   );
-}
-
-function tryParseJson(jsonString: string): { data: unknown; error: unknown } {
-  try {
-    const data = JSON.parse(jsonString);
-    return { data, error: null };
-  } catch (error) {
-    return {
-      data: null,
-      error: error,
-    };
-  }
-}
-
-async function tryRender(
-  template: string,
-  data: unknown,
-  options: unknown = null,
-): Promise<{ html: string | undefined; error: unknown }> {
-  try {
-    const html = await render(template, data, options);
-    return { html: html, error: null };
-  } catch (e) {
-    return { html: undefined, error: e };
-  }
 }
